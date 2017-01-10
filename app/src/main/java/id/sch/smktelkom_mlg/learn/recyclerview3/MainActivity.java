@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +23,7 @@ import id.sch.smktelkom_mlg.learn.recyclerview3.model.Hotel;
 public class MainActivity extends AppCompatActivity implements HotelAdapter.IHotelAdapter {
     public static final String HOTEL = "hotel";
     public static final int REQUEST_CODE_ADD = 88;
+    public static final int REQUES_CODE_EDIT = 99;
     public static final int REQUEST_CODE_EDIT = 99;
     ArrayList<Hotel> mList = new ArrayList<>();
     HotelAdapter mAdapter;
@@ -80,29 +82,6 @@ public class MainActivity extends AppCompatActivity implements HotelAdapter.IHot
     }
 
     @Override
-    public void doEdit(int pos) {
-        itemPos = pos;
-        Intent intent = new Intent(this, InputActivity.class);
-        intent.putExtra(HOTEL, mList.get(pos));
-        startActivityForResult(intent, REQUEST_CODE_EDIT);
-    }
-
-    @Override
-    public void doDelete(int pos) {
-
-    }
-
-    @Override
-    public void doFav(int pos) {
-
-    }
-
-    @Override
-    public void doShare(int pos) {
-
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -129,6 +108,41 @@ public class MainActivity extends AppCompatActivity implements HotelAdapter.IHot
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(HOTEL, mList.get(pos));
         startActivity(intent);
+    }
+
+    @Override
+    public void doEdit(int pos) {
+        itemPos = pos;
+        Intent intent = new Intent(this, InputActivity.class);
+        intent.putExtra(HOTEL, mList.get(pos));
+        startActivityForResult(intent, REQUEST_CODE_EDIT);
+    }
+
+    @Override
+    public void doDelete(int pos) {
+        itemPos = pos;
+        final Hotel hotel = mList.get(pos);
+        mList.remove(itemPos);
+        mAdapter.notifyDataSetChanged();
+        Snackbar.make(findViewById(R.id.fab), hotel.judul + " Terhapus", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mList.add(itemPos, hotel);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void doFav(int pos) {
+
+    }
+
+    @Override
+    public void doShare(int pos) {
+
     }
 
     @Override
